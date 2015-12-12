@@ -6,14 +6,14 @@
 
 module.exports = (robot) ->
 
-  robot.respond /((driving|walking|bike|biking|bicycling) )?directions from (.+) to (.+)/i, (msg) ->
+  robot.respond /((тачка|машина|пешком|пехом|велик) )? от (.+) до (.+)/i, (msg) ->
     mode        = msg.match[2] || 'driving'
     origin      = msg.match[3]
     destination = msg.match[4]
     key         = process.env.HUBOT_GOOGLE_API_KEY
 
     if origin == destination
-      return msg.send "Now you're just being silly."
+      return msg.send "долбоеб?"
 
     if !key
       msg.send "Please enter your Google API key in the environment variable HUBOT_GOOGLE_API_KEY."
@@ -32,14 +32,14 @@ module.exports = (robot) ->
       jsonBody = JSON.parse(body)
       route = jsonBody.routes[0]
       if !route
-        msg.send "Error: No route found."
+        msg.send "Маршрут не найден."
         return
       legs = route.legs[0]
       start = legs.start_address
       end = legs.end_address
       distance = legs.distance.text
       duration = legs.duration.text
-      response = "Directions from #{start} to #{end}\n"
+      response = "Направления: #{start} -> #{end}\n"
       response += "#{distance} - #{duration}\n\n"
       i = 1
       for step in legs.steps
@@ -53,7 +53,7 @@ module.exports = (robot) ->
       msg.send response
     )
 
-  robot.respond /(?:(satellite|terrain|hybrid)[- ])?map( me)? (.+)/i, (msg) ->
+  robot.respond /(?:(спутник|схема|гибрид)[- ])?map( me)? (.+)/i, (msg) ->
     mapType  = msg.match[1] or "roadmap"
     location = encodeURIComponent(msg.match[3])
     mapUrl   = "http://maps.google.com/maps/api/staticmap?markers=" +
